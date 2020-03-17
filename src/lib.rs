@@ -6,6 +6,7 @@ use std::convert::TryInto;
 use std::error::Error;
 use std::fmt;
 use std::marker::PhantomData;
+use std::mem::MaybeUninit;
 use std::ptr;
 
 use randomx4r_sys::*;
@@ -161,8 +162,7 @@ impl RandomxVm<'_> {
     /// # Ok::<(), RandomxError>(())
     /// ```
     pub fn hash(&self, input: &[u8]) -> [u8; 32] {
-        // TODO: Don't bother zeroing.
-        let mut hash: [u8; 32] = [0; 32];
+        let mut hash = MaybeUninit::<[u8; 32]>::uninit();
 
         unsafe {
             randomx_calculate_hash(
@@ -171,9 +171,9 @@ impl RandomxVm<'_> {
                 input.len().try_into().unwrap(),
                 hash.as_mut_ptr() as *mut std::ffi::c_void,
             );
-        }
 
-        hash
+            hash.assume_init()
+        }
     }
 }
 
