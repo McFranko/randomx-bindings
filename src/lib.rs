@@ -228,8 +228,8 @@ impl<T> RandomxVm<'_, T> {
     /// let hash = vm.hash("input".as_bytes());
     /// # Ok::<(), RandomxError>(())
     /// ```
-    pub fn hash(&self, input: &[u8]) -> [u8; 32] {
-        let mut hash = MaybeUninit::<[u8; 32]>::uninit();
+    pub fn hash(&self, input: &[u8]) -> [u8; RANDOMX_HASH_SIZE as usize] {
+        let mut hash = MaybeUninit::<[u8; RANDOMX_HASH_SIZE as usize]>::uninit();
 
         unsafe {
             randomx_calculate_hash(
