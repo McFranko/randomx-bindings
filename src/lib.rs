@@ -21,6 +21,12 @@ pub enum RandomxError {
     ///  * An invalid or unsupported ARGON2 value is set
     CacheAllocError,
 
+    /// Occurs when allocating a RandomX dataset fails.
+    ///
+    /// Reasons include:
+    ///  * Memory allocation fails
+    DatasetAllocError,
+
     /// Occurs when creating a VM fails.
     ///
     /// Reasons include:
@@ -33,6 +39,7 @@ impl fmt::Display for RandomxError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match *self {
             RandomxError::CacheAllocError => write!(f, "Failed to allocate cache"),
+            RandomxError::DatasetAllocError => write!(f, "Failed to allocate datataset"),
             RandomxError::VmAllocError => write!(f, "Failed to create VM"),
         }
     }
@@ -42,6 +49,7 @@ impl Error for RandomxError {
     fn description(&self) -> &str {
         match *self {
             RandomxError::CacheAllocError => "Failed to allocate cache",
+            RandomxError::DatasetAllocError => "Failed to allocate dataset",
             RandomxError::VmAllocError => "Failed to create VM",
         }
     }
@@ -131,13 +139,48 @@ impl Drop for RandomxCache {
 
 unsafe impl Send for RandomxCache {}
 
-pub struct RandomxVm<'a> {
-    vm: *mut randomx_vm,
-    phantom: PhantomData<&'a RandomxCache>,
+pub struct RandomxDataset {
+    dataset: *mut randomx_dataset,
 }
 
-impl RandomxVm<'_> {
-    pub fn new(flags: RandomxFlags, cache: &'_ RandomxCache) -> Result<RandomxVm, RandomxError> {
+impl RandomxDataset {
+    pub fn new(flags: RandomxFlags, key: &[u8]) -> Result<Self, RandomxError> {
+        let cache = RandomxCache::new(flags, key)?;
+        let dataset = unsafe { randomx_alloc_dataset(flags.bits()) };
+
+        if dataset.is_null() {
+            return Err(RandomxError::DatasetAllocError);
+        }
+
+        let count = unsafe { randomx_dataset_item_count() };
+
+        unsafe {
+            randomx_init_dataset(dataset, cache.cache, 0, count);
+        }
+
+        Ok(RandomxDataset { dataset })
+    }
+}
+
+impl Drop for RandomxDataset {
+    fn drop(&mut self) {
+        unsafe { randomx_release_dataset(self.dataset) }
+    }
+}
+
+unsafe impl Send for RandomxDataset {}
+
+pub struct RandomxVm<'a, T: 'a> {
+    vm: *mut randomx_vm,
+    phantom: PhantomData<&'a T>,
+}
+
+impl RandomxVm<'_, RandomxCache> {
+    pub fn new(flags: RandomxFlags, cache: &'_ RandomxCache) -> Result<Self, RandomxError> {
+        if flags.contains(RandomxFlags::FULLMEM) {
+            return Err(RandomxError::VmAllocError);
+        }
+
         let vm = unsafe { randomx_create_vm(flags.bits(), cache.cache, ptr::null_mut()) };
 
         if vm.is_null() {
@@ -149,7 +192,31 @@ impl RandomxVm<'_> {
             phantom: PhantomData,
         })
     }
+}
 
+impl RandomxVm<'_, RandomxDataset> {
+    pub fn new_fast(
+        flags: RandomxFlags,
+        dataset: &'_ RandomxDataset,
+    ) -> Result<Self, RandomxError> {
+        if !flags.contains(RandomxFlags::FULLMEM) {
+            return Err(RandomxError::VmAllocError);
+        }
+
+        let vm = unsafe { randomx_create_vm(flags.bits(), ptr::null_mut(), dataset.dataset) };
+
+        if vm.is_null() {
+            return Err(RandomxError::VmAllocError);
+        }
+
+        Ok(RandomxVm {
+            vm,
+            phantom: PhantomData,
+        })
+    }
+}
+
+impl<T> RandomxVm<'_, T> {
     /// Calculate the RandomX hash of some data.
     ///
     /// ```no_run
@@ -177,13 +244,13 @@ impl RandomxVm<'_> {
     }
 }
 
-impl Drop for RandomxVm<'_> {
+impl<T> Drop for RandomxVm<'_, T> {
     fn drop(&mut self) {
         unsafe { randomx_destroy_vm(self.vm) }
     }
 }
 
-unsafe impl Send for RandomxVm<'_> {}
+unsafe impl<T> Send for RandomxVm<'_, T> {}
 
 #[cfg(test)]
 mod tests {
@@ -194,6 +261,20 @@ mod tests {
         let flags = RandomxFlags::default();
         let cache = RandomxCache::new(flags, "RandomX example key\0".as_bytes()).unwrap();
         let vm = RandomxVm::new(flags, &cache).unwrap();
+        let hash = vm.hash("RandomX example input\0".as_bytes());
+        let expected = [
+            138, 72, 229, 249, 219, 69, 171, 121, 217, 8, 5, 116, 196, 216, 25, 84, 254, 106, 198,
+            56, 66, 33, 74, 255, 115, 194, 68, 178, 99, 48, 183, 201,
+        ];
+
+        assert_eq!(expected, hash);
+    }
+
+    #[test]
+    fn can_calc_hash_fast() {
+        let flags = RandomxFlags::default() | RandomxFlags::FULLMEM;
+        let dataset = RandomxDataset::new(flags, "RandomX example key\0".as_bytes()).unwrap();
+        let vm = RandomxVm::new_fast(flags, &dataset).unwrap();
         let hash = vm.hash("RandomX example input\0".as_bytes());
         let expected = [
             138, 72, 229, 249, 219, 69, 171, 121, 217, 8, 5, 116, 196, 216, 25, 84, 254, 106, 198,
