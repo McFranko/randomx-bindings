@@ -36,3 +36,5 @@ impl Drop for RandomxCache {
 }
 
 unsafe impl Send for RandomxCache {}
+
+unsafe impl Sync for RandomxCache {}

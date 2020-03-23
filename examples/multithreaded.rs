@@ -16,7 +16,7 @@ fn main() {
 
     // Try adding `| RandomxFlags::LARGEPAGES`.
     let flags = RandomxFlags::default() | RandomxFlags::FULLMEM;
-    let dataset = Arc::new(RandomxDataset::new(flags, b"key").unwrap());
+    let dataset = Arc::new(RandomxDataset::new(flags, b"key", NUM_THREADS as u8).unwrap());
 
     println!("Dataset initialised in {}ms", start.elapsed().as_millis());
 

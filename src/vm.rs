@@ -112,7 +112,8 @@ mod tests {
     #[test]
     fn can_calc_hash_fast() {
         let flags = RandomxFlags::default() | RandomxFlags::FULLMEM;
-        let dataset = RandomxDataset::new(flags, "RandomX example key\0".as_bytes()).unwrap();
+        // TODO: Get system thread count, or use an environment variable?
+        let dataset = RandomxDataset::new(flags, "RandomX example key\0".as_bytes(), 1).unwrap();
         let vm = RandomxVm::new_fast(flags, &dataset).unwrap();
         let hash = vm.hash("RandomX example input\0".as_bytes());
         let expected = [

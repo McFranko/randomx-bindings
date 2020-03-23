@@ -26,7 +26,9 @@
 //!
 //! // OR the default flags with FULLMEM (aka. fast mode)
 //! let flags = RandomxFlags::default() | RandomxFlags::FULLMEM;
-//! let dataset = RandomxDataset::new(flags, b"key")?;
+//! // Speed up dataset initialisation
+//! const THREADS: u8 = 4;
+//! let dataset = RandomxDataset::new(flags, b"key", THREADS)?;
 //! let vm = RandomxVm::new_fast(flags, &dataset)?;
 //! let hash = vm.hash(b"input");
 //! # Ok::<(), RandomxError>(())
