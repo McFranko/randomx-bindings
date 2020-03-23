@@ -34,3 +34,5 @@ impl Drop for RandomxDataset {
 }
 
 unsafe impl Send for RandomxDataset {}
+
+unsafe impl Sync for RandomxDataset {}
