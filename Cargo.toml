@@ -12,4 +12,4 @@ repository = "https://github.com/moneromint/randomx4r"
 
 [dependencies]
 bitflags = "1.2.1"
-randomx4r-sys = "0.1.0"
+randomx4r-sys = "0.1.1"
