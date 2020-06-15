@@ -1,6 +1,6 @@
 [package]
 name = "randomx4r"
-version = "0.2.0"
+version = "0.2.1"
 authors = ["Matt Smith <matt@offtopica.uk>"]
 edition = "2018"
 
