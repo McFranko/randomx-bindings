@@ -1,15 +1,15 @@
 [package]
-name = "randomx4r"
-version = "0.2.1"
-authors = ["Matt Smith <matt@offtopica.uk>"]
+name = "randomx-bindings"
+version = "0.1.0"
+authors = ["Ellis Frank <mrelfranko@disroot.org>", "Matt Smith <matt@offtopica.uk>"]
 edition = "2018"
 
 license = "MIT"
 readme = "README.md"
 
 description = "Rusty wrapper for RandomX hashing"
-repository = "https://github.com/moneromint/randomx4r"
+repository = "https://github.com/mcfranko/randomx-bindings"
 
 [dependencies]
 bitflags = "1.2.1"
-randomx4r-sys = "0.1.1"
+randomx-bindings-sys = "0.1.3"

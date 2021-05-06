@@ -1,4 +1,4 @@
-use randomx4r_sys::*;
+use randomx_bindings_sys::*;
 use std::sync::Arc;
 use std::thread;
 use std::vec::Vec;

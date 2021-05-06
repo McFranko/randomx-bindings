@@ -43,7 +43,7 @@
 
 #[macro_use]
 extern crate bitflags;
-extern crate randomx4r_sys;
+extern crate randomx_bindings_sys;
 
 pub mod cache;
 pub mod dataset;

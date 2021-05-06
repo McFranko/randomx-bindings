@@ -1,4 +1,4 @@
-use randomx4r_sys::*;
+use randomx_bindings_sys::*;
 
 bitflags! {
     /// Represents options that can be used when allocating the

@@ -1,5 +1,7 @@
 # randomx4r
 
+This is a fork of https://github.com/moneromint/randomx4r
+
 A Rusty wrapper for RandomX hashing.
 
 ## Installation
