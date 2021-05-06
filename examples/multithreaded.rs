@@ -1,7 +1,7 @@
 //! randomx4r example that calculates many hashes using multiple
 //! threads.
 
-use randomx4r::*;
+use randomx_bindings::*;
 use std::sync::Arc;
 use std::thread;
 use std::time::Instant;
