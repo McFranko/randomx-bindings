@@ -7,7 +7,7 @@
 //! Requires 256M of shared memory.
 //!
 //! ```no_run
-//! use randomx4r::{RandomxCache, RandomxError, RandomxFlags, RandomxVm};
+//! use randomx_bindings::{RandomxCache, RandomxError, RandomxFlags, RandomxVm};
 //!
 //! // Get flags supported by this system.
 //! let flags = RandomxFlags::default();
@@ -22,7 +22,7 @@
 //! Requires 2080M of shared memory.
 //!
 //! ```no_run
-//! use randomx4r::{RandomxDataset, RandomxError, RandomxFlags, RandomxVm};
+//! use randomx_bindings::{RandomxDataset, RandomxError, RandomxFlags, RandomxVm};
 //!
 //! // OR the default flags with FULLMEM (aka. fast mode)
 //! let flags = RandomxFlags::default() | RandomxFlags::FULLMEM;

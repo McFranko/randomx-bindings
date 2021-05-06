@@ -1,6 +1,6 @@
 [package]
 name = "randomx-bindings"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["Ellis Frank <mrelfranko@disroot.org>", "Matt Smith <matt@offtopica.uk>"]
 edition = "2018"
 
