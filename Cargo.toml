@@ -1,6 +1,6 @@
 [package]
 name = "randomx-bindings"
-version = "0.1.1"
+version = "0.1.2"
 authors = ["Ellis Frank <mrelfranko@disroot.org>", "Matt Smith <matt@offtopica.uk>"]
 edition = "2018"
 
@@ -12,4 +12,4 @@ repository = "https://github.com/mcfranko/randomx-bindings"
 
 [dependencies]
 bitflags = "1.2.1"
-randomx-bindings-sys = "0.1.3"
+randomx-bindings-sys = "0.1.4"

@@ -60,7 +60,7 @@ impl<T> RandomxVm<'_, T> {
     ///
     /// ```no_run
     /// # // ^ no_run, this is already tested in the actual tests
-    /// use randomx4r::*;
+    /// use randomx_bindings::*;
     /// let flags = RandomxFlags::default();
     /// let cache = RandomxCache::new(flags, "key".as_bytes())?;
     /// let vm = RandomxVm::new(flags, &cache)?;
