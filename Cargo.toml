@@ -12,4 +12,4 @@ repository = "https://github.com/mcfranko/randomx-bindings"
 
 [dependencies]
 bitflags = "1.2.1"
-randomx-bindings-sys = "0.1.4"
+randomx-bindings-sys = "^0.1"
